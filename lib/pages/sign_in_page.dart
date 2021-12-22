@@ -38,6 +38,14 @@ class _SignInPageState extends State<SignInPage> {
           '/home',
           (route) => false,
         );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: alertColor,
+            content: const Text('Login failed'),
+            duration: const Duration(seconds: 3),
+          ),
+        );
       }
 
       setState(() {
@@ -107,7 +115,7 @@ class _SignInPageState extends State<SignInPage> {
     }
 
     Widget signUp() {
-      return CustomTAC(
+      return CustomTac(
         onPressed: () => Navigator.pushNamed(context, '/sign-up'),
         text1: 'Dont have an account?  ',
         text2: 'Sign Up',

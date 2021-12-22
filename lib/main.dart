@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shoescommerce/providers/cart_provider.dart';
+import 'package:shoescommerce/providers/product_provider.dart';
+import 'package:shoescommerce/providers/transaction_provider.dart';
+import 'package:shoescommerce/providers/wishlist_provider.dart';
 import 'pages/checkout_success_page.dart';
 import 'providers/auth_providers.dart';
 import 'pages/cart_page.dart';
 import 'pages/checkout_detail_page.dart';
-import 'pages/detail_product_page.dart';
 import 'pages/detail_chat_page.dart';
 import 'pages/edit_profile_page.dart';
 import 'pages/home/main_page.dart';
@@ -23,6 +26,18 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (context) => AuthProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ProductProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => WishlistProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => CartProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => TransactonProvider(),
         )
       ],
       child: MaterialApp(
@@ -33,7 +48,6 @@ class MyApp extends StatelessWidget {
           '/home': (context) => const MainPage(),
           '/detail-chat': (context) => const DetailChatPage(),
           '/edit-profile': (context) => const EditProfilePage(),
-          '/product': (context) => const ProductPage(),
           '/cart': (context) => const CartPage(),
           '/checkout': (context) => const CheckoutDetailPage(),
           '/checkout-success': (context) => const CheckoutSuccessPage(),

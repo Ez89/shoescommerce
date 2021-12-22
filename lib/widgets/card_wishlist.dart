@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:shamo/shared/theme.dart';
+import 'package:provider/provider.dart';
+import 'package:shoescommerce/models/product_model.dart';
+import 'package:shoescommerce/providers/wishlist_provider.dart';
+import '../shared/theme.dart';
 
-class CardFavorite extends StatelessWidget {
-  const CardFavorite({Key? key}) : super(key: key);
+class WishlistCard extends StatelessWidget {
+  final ProductModel product;
+  const WishlistCard({Key? key, required this.product}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    WishlistProvider wishlistProvider = Provider.of<WishlistProvider>(context);
     return Container(
       margin: EdgeInsets.only(
         left: defaultMargin,
@@ -27,7 +32,7 @@ class CardFavorite extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.asset('assets/image_shoes4.png',
+            child: Image.network(product.galleries![0].url!,
                 width: 60, height: 60, fit: BoxFit.cover),
           ),
           const SizedBox(width: 12),
@@ -37,11 +42,17 @@ class CardFavorite extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Terrex Urban Low',
-                  style: primaryTextStyle.copyWith(fontWeight: semiBold),
+                  product.name!,
+                  style: primaryTextStyle.copyWith(
+                    fontWeight: semiBold,
+                  ),
+                  maxLines: 1,
                 ),
                 const SizedBox(height: 2),
-                Text('\$69.69', style: priceTextStyle),
+                Text(
+                  '\$${product.price}',
+                  style: priceTextStyle,
+                ),
               ],
             ),
           ),
@@ -53,10 +64,15 @@ class CardFavorite extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: Center(
-              child: Icon(
-                Icons.favorite_rounded,
-                size: 17,
-                color: primaryTextColor,
+              child: GestureDetector(
+                onTap: () {
+                  wishlistProvider.setProduct(product);
+                },
+                child: Icon(
+                  Icons.favorite_rounded,
+                  size: 17,
+                  color: primaryTextColor,
+                ),
               ),
             ),
           ),

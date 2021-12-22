@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shamo/shared/theme.dart';
+import '../shared/theme.dart';
 
 class TileChat extends StatelessWidget {
   const TileChat({Key? key}) : super(key: key);

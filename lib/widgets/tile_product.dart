@@ -1,21 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:shoescommerce/models/product_model.dart';
+import 'package:shoescommerce/pages/detail_product_page.dart';
 import '../shared/theme.dart';
 
-class TileProduct extends StatelessWidget {
-  const TileProduct({Key? key}) : super(key: key);
+class ProductTile extends StatelessWidget {
+  final ProductModel product;
+  const ProductTile({Key? key, required this.product}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, '/product'),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductPage(product: product),
+          ),
+        );
+      },
       child: Container(
         margin: EdgeInsets.only(bottom: defaultMargin),
         child: Row(
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Image.asset(
-                'assets/image_shoes5.png',
+              child: Image.network(
+                product.galleries![0].url!,
                 width: 120,
                 height: 120,
                 fit: BoxFit.cover,
@@ -27,20 +37,21 @@ class TileProduct extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Football',
+                    product.category!.name!,
                     style: subtitleTextStyle.copyWith(fontSize: 12),
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Predator 20.3 Firm Ground',
+                    product.name!,
                     style: primaryTextStyle.copyWith(
                       fontSize: 16,
                       fontWeight: semiBold,
                     ),
+                    maxLines: 1,
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '\$69,69',
+                    '\$${product.price}',
                     style: priceTextStyle.copyWith(fontWeight: medium),
                   ),
                 ],

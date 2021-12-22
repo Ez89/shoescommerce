@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shamo/providers/auth_providers.dart';
+import '../providers/auth_providers.dart';
 import '../shared/theme.dart';
 import '../widgets/custom_input_text.dart';
 import '../widgets/custom_tac.dart';
@@ -138,7 +138,7 @@ class _SignUpPageState extends State<SignUpPage> {
     }
 
     Widget signIn() {
-      return CustomTAC(
+      return CustomTac(
         onPressed: () {
           Navigator.pop(context);
         },

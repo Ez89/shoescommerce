@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shamo/shared/theme.dart';
+import '../shared/theme.dart';
 
 class CustomButton extends StatelessWidget {
   final Function() onPressed;

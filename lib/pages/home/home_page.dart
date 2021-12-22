@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shoescommerce/providers/product_provider.dart';
+import '../../models/user_model.dart';
+import '../../providers/auth_providers.dart';
 import '../../widgets/card_product.dart';
 import '../../widgets/custom_categories.dart';
 import '../../widgets/tile_product.dart';
@@ -9,6 +13,9 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    UserModel? user = authProvider.user;
+    ProductProvider productProvider = Provider.of<ProductProvider>(context);
     Widget header() {
       return Container(
         margin: EdgeInsets.all(defaultMargin),
@@ -19,12 +26,12 @@ class HomePage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Hallo, ez',
+                    'Hallo, ${user!.name}',
                     style: primaryTextStyle.copyWith(
                         fontSize: 24, fontWeight: semiBold),
                   ),
                   Text(
-                    '@ezsltn',
+                    '${user.username}',
                     style: subtitleTextStyle.copyWith(fontSize: 16),
                   ),
                 ],
@@ -33,11 +40,11 @@ class HomePage extends StatelessWidget {
             Container(
               width: 54,
               height: 54,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
                   fit: BoxFit.cover,
-                  image: AssetImage('assets/image_profile.png'),
+                  image: NetworkImage(user.profilePhotoUrl!),
                 ),
               ),
             ),
@@ -107,9 +114,13 @@ class HomePage extends StatelessWidget {
             SizedBox(
               width: defaultMargin,
             ),
-            const CardProduct(),
-            const CardProduct(),
-            const CardProduct(),
+            Row(
+              children: productProvider.products
+                  .map(
+                    (product) => ProductCard(product: product),
+                  )
+                  .toList(),
+            ),
           ],
         ),
       );
@@ -138,27 +149,26 @@ class HomePage extends StatelessWidget {
           horizontal: defaultMargin,
         ),
         child: Column(
-          children: const [
-            TileProduct(),
-            TileProduct(),
-            TileProduct(),
-            TileProduct(),
-            TileProduct(),
-            TileProduct(),
-          ],
+          children: productProvider.products
+              .map(
+                (product) => ProductTile(product: product),
+              )
+              .toList(),
         ),
       );
     }
 
-    return ListView(
-      children: [
-        header(),
-        categories(),
-        popularProductTitle(),
-        popularProduct(),
-        newArrivalTitle(),
-        newArrival()
-      ],
+    return SafeArea(
+      child: ListView(
+        children: [
+          header(),
+          categories(),
+          popularProductTitle(),
+          popularProduct(),
+          newArrivalTitle(),
+          newArrival()
+        ],
+      ),
     );
   }
 }

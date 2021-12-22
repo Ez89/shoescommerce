@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../widgets/card_favorite.dart';
+import 'package:provider/provider.dart';
+import 'package:shoescommerce/providers/wishlist_provider.dart';
+import 'package:shoescommerce/widgets/card_wishlist.dart';
 import '../../widgets/custom_appbar.dart';
 import '../../widgets/custom_button.dart';
 import '../../shared/theme.dart';
@@ -9,7 +11,8 @@ class WishlistPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: unused_element
+    WishlistProvider wishlistProvider = Provider.of<WishlistProvider>(context);
+
     Widget emptyWishList() {
       return Expanded(
         child: Container(
@@ -53,11 +56,11 @@ class WishlistPage extends StatelessWidget {
           width: double.infinity,
           color: backgroundColor3,
           child: ListView(
-            children: const [
-              CardFavorite(),
-              CardFavorite(),
-            ],
-          ),
+              children: wishlistProvider.wishlist
+                  .map(
+                    (product) => WishlistCard(product: product),
+                  )
+                  .toList()),
         ),
       );
     }
@@ -65,8 +68,7 @@ class WishlistPage extends StatelessWidget {
     return Column(
       children: [
         const CustomAppBar(text: 'Favorite Shoes'),
-        //emptyWishList(),
-        content(),
+        wishlistProvider.wishlist.isEmpty ? emptyWishList() : content(),
       ],
     );
   }

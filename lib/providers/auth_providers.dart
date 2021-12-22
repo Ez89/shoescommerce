@@ -1,6 +1,8 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/cupertino.dart';
-import 'package:shamo/models/user_model.dart';
-import 'package:shamo/services/auth_services.dart';
+import '../models/user_model.dart';
+import '../services/auth_services.dart';
 
 class AuthProvider with ChangeNotifier {
   UserModel? _user;
@@ -29,15 +31,15 @@ class AuthProvider with ChangeNotifier {
       _user = user;
       return true;
     } catch (e) {
-      print (e);
+      print(e);
       return false;
-    } 
+    }
   }
 
   Future<bool?> login({
     String? email,
     String? password,
-  })async {
+  }) async {
     try {
       UserModel? user = await AuthService().login(
         email: email,

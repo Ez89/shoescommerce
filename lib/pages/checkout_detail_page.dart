@@ -1,14 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shoescommerce/providers/auth_providers.dart';
+import 'package:shoescommerce/providers/cart_provider.dart';
+import 'package:shoescommerce/providers/transaction_provider.dart';
+import 'package:shoescommerce/widgets/custom_text_button.dart';
 import '../shared/theme.dart';
 import '../widgets/card_checkout.dart';
 import '../widgets/custom_appbar.dart';
-import '../widgets/custom_button.dart';
 
-class CheckoutDetailPage extends StatelessWidget {
-  const CheckoutDetailPage({Key? key}) : super(key: key);
+class CheckoutDetailPage extends StatefulWidget {
+  const CheckoutDetailPage({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<CheckoutDetailPage> createState() => _CheckoutDetailPageState();
+}
+
+class _CheckoutDetailPageState extends State<CheckoutDetailPage> {
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
+    CartProvider cartProvider = Provider.of<CartProvider>(context);
+    TransactonProvider transactionProvider =
+        Provider.of<TransactonProvider>(context);
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
+    handleCheckout() async {
+      setState(() {
+        isLoading = true;
+      });
+
+      if (await transactionProvider.checkout(
+        authProvider.user!.token!,
+        cartProvider.cart,
+        cartProvider.totalPrice(),
+      )) {
+        cartProvider.cart = [];
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/checkout-success', (route) => false);
+      }
+      setState(() {
+        isLoading = false;
+      });
+    }
+
     Widget cardAddressDetail() {
       return Container(
         margin: EdgeInsets.only(top: defaultMargin),
@@ -115,15 +152,15 @@ class CheckoutDetailPage extends StatelessWidget {
             ),
             tilePaymentSummary(
               'Product Quantity',
-              '2 Items',
+              '${cartProvider.totalItem()} Items',
             ),
             tilePaymentSummary(
               'Product Price',
-              '\$575.96',
+              '\$${cartProvider.totalPrice()}',
             ),
             tilePaymentSummary(
               'Shipping',
-              'Free',
+              '\$10',
             ),
             const SizedBox(height: 11),
             const Divider(
@@ -141,7 +178,7 @@ class CheckoutDetailPage extends StatelessWidget {
                     style: priceTextStyle.copyWith(fontWeight: semiBold),
                   ),
                   Text(
-                    '\$575.92',
+                    '\$${cartProvider.totalPrice() + 10}',
                     style: priceTextStyle.copyWith(fontWeight: semiBold),
                   )
                 ],
@@ -165,8 +202,13 @@ class CheckoutDetailPage extends StatelessWidget {
                 fontWeight: medium,
               ),
             ),
-            const CardCheckout(),
-            const CardCheckout(),
+            Column(
+              children: cartProvider.cart
+                  .map(
+                    (cart) => CardCheckout(cart: cart),
+                  )
+                  .toList(),
+            ),
             cardAddressDetail(),
             cardPaymentSummary(),
             const SizedBox(height: 30),
@@ -176,17 +218,17 @@ class CheckoutDetailPage extends StatelessWidget {
             ),
             const SizedBox(height: 30),
             SizedBox(
-              height: 50,
-              width: double.infinity,
-              child: CustomButton(
-                onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                    context, '/checkout-success', (route) => false),
-                text: 'Checkout Now',
-                textColor: primaryTextColor,
-                backgroundColor: primaryColor,
-                textSize: 16,
-                fontWeight: semiBold,
-              ),
+              child: isLoading
+                  ? CustomTextButton(
+                      name: 'Loading',
+                      margin: EdgeInsets.only(top: defaultMargin),
+                      onPressed: () {},
+                      isAvailableLoading: true,
+                    )
+                  : CustomTextButton(
+                      name: 'Checkout Now',
+                      margin: EdgeInsets.only(top: defaultMargin),
+                      onPressed: handleCheckout),
             )
           ],
         ),

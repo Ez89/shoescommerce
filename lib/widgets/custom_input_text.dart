@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shamo/shared/theme.dart';
+import '../shared/theme.dart';
 
 class InputTextFormField extends StatelessWidget {
   final String title;
@@ -43,8 +43,7 @@ class InputTextFormField extends StatelessWidget {
                 children: [
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 16),
-                    width: 17,
-                    height: 12,
+                    width: 18,
                     decoration: BoxDecoration(
                       image: DecorationImage(image: AssetImage(imageUrl)),
                     ),

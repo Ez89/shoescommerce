@@ -1,17 +1,21 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shoescommerce/models/product_model.dart';
+import 'package:shoescommerce/providers/cart_provider.dart';
+import 'package:shoescommerce/providers/wishlist_provider.dart';
 import '../shared/theme.dart';
 import '../widgets/custom_button.dart';
 
 class ProductPage extends StatefulWidget {
-  const ProductPage({Key? key}) : super(key: key);
+  final ProductModel product;
+  const ProductPage({Key? key, required this.product}) : super(key: key);
 
   @override
   State<ProductPage> createState() => _ProductPageState();
 }
 
 class _ProductPageState extends State<ProductPage> {
-  int currentIndex = 0;
   List images = [
     'assets/image_shoes.png',
     'assets/image_shoes2.png',
@@ -22,12 +26,77 @@ class _ProductPageState extends State<ProductPage> {
     'assets/image_shoes.png',
     'assets/image_shoes2.png',
     'assets/image_shoes3.png',
-    'assets/image_shoes.png',
-    'assets/image_shoes2.png',
-    'assets/image_shoes3.png',
+    'assets/image_shoes4.png',
+    'assets/image_shoes5.png',
+    'assets/image_shoes6.png',
+    'assets/image_shoes7.png',
+    'assets/image_shoes8.png',
   ];
+  int currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
+    WishlistProvider wishlistProvider = Provider.of<WishlistProvider>(context);
+    CartProvider cartProvider = Provider.of<CartProvider>(context);
+    Future<void> showSuccesDialog() async {
+      return showDialog(
+        context: context,
+        builder: (BuildContext context) => SizedBox(
+          width: MediaQuery.of(context).size.width - (2 * defaultMargin),
+          child: AlertDialog(
+            backgroundColor: backgroundColor3,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Icon(Icons.close)),
+                  ),
+                  Image.asset(
+                    'assets/icon_success.png',
+                    width: 100,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'Hurray :)',
+                    style: primaryTextStyle.copyWith(
+                      fontSize: 18,
+                      fontWeight: semiBold,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  Text(
+                    'Item added successfully',
+                    style: subtitleTextStyle,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  CustomButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/cart');
+                    },
+                    text: 'View my cart',
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     Widget indicator(int index) {
       return Container(
         margin: const EdgeInsets.symmetric(horizontal: 2),
@@ -83,8 +152,8 @@ class _ProductPageState extends State<ProductPage> {
             ),
           ),
           CarouselSlider(
-            items: images
-                .map((image) => Image.asset(image,
+            items: widget.product.galleries!
+                .map((image) => Image.network(image.url!,
                     width: MediaQuery.of(context).size.width,
                     height: 310,
                     fit: BoxFit.cover))
@@ -101,7 +170,7 @@ class _ProductPageState extends State<ProductPage> {
           const SizedBox(height: 30),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: images.map((e) {
+            children: widget.product.galleries!.map((e) {
               index++;
               return indicator(index);
             }).toList(),
@@ -130,32 +199,51 @@ class _ProductPageState extends State<ProductPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'TERREX URBAN LOW',
-                        style: primaryTextStyle.copyWith(
-                            fontSize: 18, fontWeight: semiBold),
-                      ),
-                      Text(
-                        'Hiking',
-                        style: secondaryTextStyle.copyWith(fontSize: 12),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    width: 46,
-                    height: 46,
-                    decoration: BoxDecoration(
-                      color: subtitleColor,
-                      shape: BoxShape.circle,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.product.name!,
+                          style: primaryTextStyle.copyWith(
+                            fontSize: 18,
+                            fontWeight: semiBold,
+                          ),
+                        ),
+                        Text(
+                          widget.product.category!.name!,
+                          style: secondaryTextStyle.copyWith(fontSize: 12),
+                        ),
+                      ],
                     ),
-                    child: Center(
-                      child: Icon(
-                        Icons.favorite_rounded,
-                        color: backgroundColor1,
-                      ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      wishlistProvider.setProduct(widget.product);
+
+                      if (wishlistProvider.isWishlist(widget.product)) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: secondaryColor,
+                            content:
+                                const Text('Has been added to the Whitelist'),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: alertColor,
+                            content: const Text(
+                                'Has been removed from the Whitelist'),
+                          ),
+                        );
+                      }
+                    },
+                    child: Image.asset(
+                      wishlistProvider.isWishlist(widget.product)
+                          ? 'assets/button_wishlist_blue.png'
+                          : 'assets/button_wishlist.png',
+                      width: 46,
                     ),
                   ),
                 ],
@@ -174,9 +262,12 @@ class _ProductPageState extends State<ProductPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Price starts from', style: primaryTextStyle),
                   Text(
-                    '\$143,98',
+                    'Price starts from',
+                    style: primaryTextStyle,
+                  ),
+                  Text(
+                    '\$${widget.product.price}',
                     style: priceTextStyle.copyWith(
                       fontSize: 16,
                       fontWeight: semiBold,
@@ -197,7 +288,7 @@ class _ProductPageState extends State<ProductPage> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Unpaved trails and mixed surfaces are easy when you have the traction and support you need. Casual enough for the daily commute.',
+                      widget.product.description!,
                       style: subtitleTextStyle.copyWith(fontWeight: light),
                       textAlign: TextAlign.justify,
                     ),
@@ -228,21 +319,13 @@ class _ProductPageState extends State<ProductPage> {
               padding: EdgeInsets.symmetric(horizontal: defaultMargin),
               child: Row(
                 children: [
-                  SizedBox(
-                    width: 54,
-                    height: 54,
-                    child: TextButton(
-                      onPressed: () {},
-                      style: TextButton.styleFrom(
-                        side: BorderSide(color: primaryColor),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Icon(
-                        Icons.chat,
-                        color: primaryColor,
-                      ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/detail-chat');
+                    },
+                    child: Image.asset(
+                      'assets/button_chat.png',
+                      width: 54,
                     ),
                   ),
                   Container(
@@ -250,7 +333,10 @@ class _ProductPageState extends State<ProductPage> {
                     height: 54,
                     margin: const EdgeInsets.only(left: 16),
                     child: CustomButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        cartProvider.addCart(widget.product);
+                        showSuccesDialog();
+                      },
                       text: 'Add to Cart',
                       textColor: primaryTextColor,
                       backgroundColor: primaryColor,
@@ -268,11 +354,13 @@ class _ProductPageState extends State<ProductPage> {
 
     return Scaffold(
       backgroundColor: backgroundColor6,
-      body: ListView(
-        children: [
-          header(),
-          content(),
-        ],
+      body: SafeArea(
+        child: ListView(
+          children: [
+            header(),
+            content(),
+          ],
+        ),
       ),
     );
   }

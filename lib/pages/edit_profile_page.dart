@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shoescommerce/models/user_model.dart';
+import 'package:shoescommerce/providers/auth_providers.dart';
 import '../shared/theme.dart';
 
 class EditProfilePage extends StatelessWidget {
@@ -6,7 +9,9 @@ class EditProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget customTextField(String title, String textInput) {
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    UserModel? user = authProvider.user;
+    Widget customTextField(String title, String username) {
       return Container(
         width: double.infinity,
         margin: const EdgeInsets.only(bottom: 24),
@@ -24,7 +29,7 @@ class EditProfilePage extends StatelessWidget {
             TextFormField(
               style: primaryTextStyle,
               decoration: InputDecoration(
-                hintText: textInput,
+                hintText: username,
                 hintStyle: primaryTextStyle,
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(
@@ -45,16 +50,11 @@ class EditProfilePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ClipOval(
-              child: Image.asset(
-                'assets/image_profile.png',
-                width: 100,
-              ),
-            ),
+            ClipOval(child: Image.network(user!.profilePhotoUrl!)),
             const SizedBox(height: 30),
-            customTextField('Name', 'Sultan EZ'),
-            customTextField('Username', '@ezsltn89'),
-            customTextField('Email Adress', 'ezsltn89@gmail.com'),
+            customTextField('Name', '${user.name}'),
+            customTextField('Username', '@${user.username}'),
+            customTextField('Email Address', '@${user.email}')
           ],
         ),
       );

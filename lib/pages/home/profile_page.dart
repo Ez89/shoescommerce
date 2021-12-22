@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shoescommerce/models/user_model.dart';
+import 'package:shoescommerce/providers/auth_providers.dart';
 import '../../shared/theme.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -6,6 +9,8 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    UserModel? user = authProvider.user;
     Widget header() {
       return AppBar(
         automaticallyImplyLeading: false,
@@ -16,26 +21,21 @@ class ProfilePage extends StatelessWidget {
             padding: EdgeInsets.all(defaultMargin),
             child: Row(
               children: [
-                ClipOval(
-                  child: Image.asset(
-                    'assets/image_profile.png',
-                    width: 64,
-                  ),
-                ),
+                ClipOval(child: Image.network(user!.profilePhotoUrl!)),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Hallo, ez',
+                        'Hallo, ${user.name}',
                         style: primaryTextStyle.copyWith(
                           fontSize: 24,
                           fontWeight: semiBold,
                         ),
                       ),
                       Text(
-                        '@ezsltn89',
+                        '${user.username}',
                         style: subtitleTextStyle.copyWith(fontSize: 16),
                       ),
                     ],
